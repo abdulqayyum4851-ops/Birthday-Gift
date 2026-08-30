@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,6 +18,7 @@ input,textarea{width:90%;max-width:460px;padding:14px;margin:7px;border:2px soli
 textarea{height:115px;resize:none}
 button{border:0;border-radius:30px;padding:14px 25px;margin:10px 5px;background:linear-gradient(135deg,#e75480,#a855f7);color:#fff;font-size:17px;cursor:pointer;box-shadow:0 7px 18px #0002}
 button:hover{transform:scale(1.05)}
+.whatsapp-btn {background:linear-gradient(135deg,#25D366,#128C7E) !important;}
 .small{font-size:14px;opacity:.75}
 .linkbox{word-break:break-all;background:#fff5fa;padding:14px;border-radius:15px;margin:15px auto;max-width:650px}
 .gift{position:relative;width:190px;height:175px;margin:35px auto;cursor:pointer;transition:.3s}
@@ -60,6 +62,7 @@ button:hover{transform:scale(1.05)}
 <div id="result" class="hidden">
 <div class="linkbox" id="generatedLink"></div>
 <button onclick="copyLink()">📋 Copy Link</button>
+<button onclick="shareWhatsApp()" class="whatsapp-btn">📲 Share on WhatsApp</button>
 <p id="copied" class="small"></p>
 </div>
 <hr>
@@ -147,6 +150,12 @@ async function copyLink(){
  const text=document.getElementById("generatedLink").textContent;
  try{await navigator.clipboard.writeText(text);document.getElementById("copied").textContent="Copied! ❤️";}
  catch(e){document.getElementById("copied").textContent="Select and copy the link manually. ❤️";}
+}
+function shareWhatsApp(){
+ const link=document.getElementById("generatedLink").textContent;
+ const name=document.getElementById("cname").value.trim() || "Friend";
+ const text=`🎂 I have a special birthday surprise for you, ${name}! Open it here: \n\n${link}`;
+ window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
 }
 function loadDetails(){
  const p=new URLSearchParams(location.search);
