@@ -37,7 +37,6 @@ button:hover{transform:scale(1.05)}
 @keyframes flicker{to{transform:rotate(-45deg) scale(1.18)}}
 .off{display:none}
 .message{white-space:pre-line;background:linear-gradient(135deg,#fff0f6,#f5edff);padding:25px;border-radius:22px}
-.photos{border:3px dashed #e87992;padding:25px;border-radius:22px;background:#fff8fb;margin-top:20px}
 .confetti{position:fixed;top:-30px;z-index:9999;font-size:25px;pointer-events:none;animation:fall 4s linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
 .heart{position:fixed;bottom:-30px;font-size:25px;animation:up 5s linear forwards;pointer-events:none}
@@ -56,6 +55,8 @@ button:hover{transform:scale(1.05)}
 <input id="cname" placeholder="Friend's name (Optional)">
 <input id="cage" type="number" placeholder="Age (Optional)">
 <textarea id="cmessage" placeholder="Birthday message (Optional)"></textarea>
+<input id="cpass" placeholder="Secret Password / Word (Optional)" style="border-color:#a855f7;">
+<p class="small" style="color:#a855f7; margin-top:-5px;">Agar password lagaya toh dost ko gift kholne ke liye yehi word likhna hoga!</p>
 <br>
 <button onclick="makeLink()">🔗 Generate Gift Link</button>
 <div id="result" class="hidden">
@@ -67,6 +68,16 @@ button:hover{transform:scale(1.05)}
 <hr>
 <p class="small">If you are opening a personalized link, this creator panel will be skipped automatically.</p>
 <button onclick="startGeneric()">🎂 Preview Birthday Gift</button>
+</div>
+
+<!-- SIMPLE PASSWORD SECTION -->
+<div class="card hidden" id="lockSection">
+<h2>A Special Gift For You 🎁</h2>
+<p>Enter password to open your gift</p>
+<input id="guessPass" type="text" placeholder="Enter password..." style="text-align:center;">
+<br>
+<button onclick="checkPassword()">Open Gift</button>
+<p id="wrongPassMsg" class="hidden" style="color:#e75480; font-weight:bold; margin-top:10px;">❌ Incorrect Password! Please try again.</p>
 </div>
 
 <!-- BIRTHDAY -->
@@ -105,12 +116,7 @@ button:hover{transform:scale(1.05)}
 <div class="big">💌</div>
 <h1>A Little Message For You ❤️</h1>
 <div class="message"><p id="messageText"></p></div>
-<div class="photos">
-<h2>📸 Our Memories</h2>
-<p>Special memories deserve a special place. ❤️</p>
-<div class="big">📷 💕 📷 💕 📷</div>
-<p class="small">You can add real photos to this section later.</p>
-</div>
+<br>
 <button onclick="finalSurprise()">🎁 One Last Surprise</button>
 </div>
 
@@ -129,17 +135,22 @@ button:hover{transform:scale(1.05)}
 <script>
 let birthdayName="Birthday Star",birthdayAge="",customMessage="May your life always be filled with happiness, peace, success and beautiful moments. ✨❤️";
 let personalized=false;
+let actualPassword="";
 
 function enc(s){return encodeURIComponent(s||"")}
 function makeLink(){
  const name=document.getElementById("cname").value.trim();
  const age=document.getElementById("cage").value.trim();
  const msg=document.getElementById("cmessage").value.trim();
+ const pass=document.getElementById("cpass").value.trim();
+ 
  const base=window.location.href.split("?")[0];
  const parts=[];
  if(name)parts.push("name="+enc(name));
  if(age)parts.push("age="+enc(age));
  if(msg)parts.push("message="+enc(msg));
+ if(pass)parts.push("pass="+enc(pass));
+ 
  const link=base+(parts.length?"?"+parts.join("&"):"");
  document.getElementById("generatedLink").textContent=link;
  document.getElementById("result").classList.remove("hidden");
@@ -156,22 +167,42 @@ function shareWhatsApp(){
  const text=`🎂 I have a special birthday surprise for you, ${name}! Open it here: \n\n${link}`;
  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
 }
+
 function loadDetails(){
  const p=new URLSearchParams(location.search);
- if(p.has("name")||p.has("age")||p.has("message")){
+ if(p.has("name")||p.has("age")||p.has("message")||p.has("pass")){
    personalized=true;
    birthdayName=p.get("name")?.trim()||"Birthday Star";
    birthdayAge=p.get("age")?.trim()||"";
    customMessage=p.get("message")?.trim()||customMessage;
+   actualPassword=p.get("pass")?.trim()||"";
+   
    document.getElementById("creator").classList.add("hidden");
-   
-   // FIX: Added these two lines so the page doesn't stay blank
-   document.getElementById("birthday").classList.remove("hidden");
-   confetti(); 
-   
    prepare();
+
+   // Check if password exists
+   if(actualPassword !== "") {
+     document.getElementById("lockSection").classList.remove("hidden");
+   } else {
+     document.getElementById("birthday").classList.remove("hidden");
+     confetti(); 
+   }
  }
 }
+
+function checkPassword() {
+  const guess = document.getElementById("guessPass").value.trim().toLowerCase();
+  const correct = actualPassword.toLowerCase();
+  
+  if(guess === correct) {
+    document.getElementById("lockSection").classList.add("hidden");
+    document.getElementById("birthday").classList.remove("hidden");
+    confetti();
+  } else {
+    document.getElementById("wrongPassMsg").classList.remove("hidden");
+  }
+}
+
 function prepare(){
  document.getElementById("personName").textContent=birthdayName;
  document.getElementById("ageText").textContent=birthdayAge ? "Welcome to your "+birthdayAge+"th birthday! 🥳" : "Today is your special day! 🥳";
@@ -198,6 +229,15 @@ function confetti(){
 function hearts(){
  for(let i=0;i<20;i++){let x=document.createElement("div");x.className="heart";x.textContent="❤️";x.style.left=Math.random()*100+"vw";x.style.animationDuration=3+Math.random()*3+"s";document.body.appendChild(x);setTimeout(()=>x.remove(),6000)}
 }
+
+// Enter button daba kar bhi password check ho jaye
+document.getElementById("guessPass")?.addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    checkPassword();
+  }
+});
+
 loadDetails();
 </script>
 </body>
