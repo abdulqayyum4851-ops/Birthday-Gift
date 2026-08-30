@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -165,6 +164,11 @@ function loadDetails(){
    birthdayAge=p.get("age")?.trim()||"";
    customMessage=p.get("message")?.trim()||customMessage;
    document.getElementById("creator").classList.add("hidden");
+   
+   // FIX: Added these two lines so the page doesn't stay blank
+   document.getElementById("birthday").classList.remove("hidden");
+   confetti(); 
+   
    prepare();
  }
 }
