@@ -68,7 +68,7 @@ button:hover{transform:translateY(-3px) scale(1.05); box-shadow:0 15px 25px rgba
 .small{font-size:13px; opacity:.8;}
 .linkbox{word-break:break-all; background:rgba(255, 245, 250, 0.8); padding:14px; border-radius:15px; margin:15px auto; max-width:650px; font-size:13px; font-family:monospace; color:#333; border: 1px dashed #e75480;}
 
-/* Animations for Gift and Cake */
+/* Animations for Gift and Cake remain same but refined */
 .gift{position:relative;width:190px;height:175px;margin:35px auto;cursor:pointer;transition:.3s; animation: float 3s ease-in-out infinite;}
 @keyframes float { 0% {transform:translateY(0px);} 50% {transform:translateY(-15px);} 100% {transform:translateY(0px);} }
 .gift:hover{transform:scale(1.1) rotate(3deg); animation:none;}
@@ -100,12 +100,9 @@ button:hover{transform:translateY(-3px) scale(1.05); box-shadow:0 15px 25px rgba
 </head>
 <body>
 
-<!-- Sound Effects & Music -->
+<!-- Hidden Audio for Sound Effects -->
 <audio id="soundPop" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg" preload="auto"></audio>
 <audio id="soundCheer" src="https://actions.google.com/sounds/v1/crowds/kids_cheering.ogg" preload="auto"></audio>
-<audio id="bdayMusic" preload="auto" loop>
-  <source src="https://ia801703.us.archive.org/34/items/HappyBirthdayToYou_637/Happy_Birthday_To_You.mp3" type="audio/mpeg">
-</audio>
 
 <div class="container">
 
@@ -227,63 +224,10 @@ async function copyLink(){
  catch(e){document.getElementById("copied").textContent="Select and copy manually.";}
 }
 
-// 🚀 THE ULTIMATE DOUBLE-FAILSAFE FIX 🚀
 async function shortenLink() {
-  const generatedLinkElement = document.getElementById("generatedLink");
-  const longUrl = generatedLinkElement.textContent;
-  const statusText = document.getElementById("copied");
-
-  if (location.protocol === 'file:') {
-    alert("⚠️ Offline file detected! Isay GitHub par upload karein.");
-    return;
-  }
-
-  statusText.innerHTML = "Chota ho raha hai... ⏳ <br><small>Thoda sabar karein...</small>";
-
-  try {
-    // TARIQA 1: Safe Proxy GET request (Adblocker bypass ke liye)
-    const targetApi = encodeURIComponent(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(longUrl)}`);
-    const proxyUrl = `https://api.allorigins.win/get?url=${targetApi}`;
-    
-    const response = await fetch(proxyUrl);
-    const data = await response.json();
-
-    if (data && data.contents && (data.contents.includes("is.gd") || data.contents.includes("v.gd"))) {
-      const shortUrl = data.contents.trim();
-      generatedLinkElement.textContent = shortUrl; 
-      await navigator.clipboard.writeText(shortUrl); 
-      statusText.innerHTML = "<b>Short link copy ho gaya! ✅</b> <br> (Yeh direct gift open karega)";
-      return; // Agar kamyab ho gaya toh yahin ruk jao
-    } else {
-      throw new Error("Proxy response theek nahi");
-    }
-  } catch (error1) {
-    console.log("Method 1 Fail hua, ab Method 2 try kar rahe hain...");
-    
-    try {
-      // TARIQA 2: Spoo.me direct API (CORS Supported)
-      const response2 = await fetch("https://spoo.me/api/shorten", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded", "Accept": "application/json" },
-        body: new URLSearchParams({ url: longUrl })
-      });
-      
-      const data2 = await response2.json();
-      
-      if (data2 && data2.short_url) {
-        generatedLinkElement.textContent = data2.short_url; 
-        await navigator.clipboard.writeText(data2.short_url); 
-        statusText.innerHTML = "<b>Short link copy ho gaya! ✅</b> <br> (Yeh direct gift open karega)";
-        return;
-      } else {
-        throw new Error("API 2 bhi fail");
-      }
-    } catch (error2) {
-      // TARIQA 3: Backup (Agar Chrome sab kuch hi block kar de)
-      console.log("Browser bohat strict hai. Backup message show kar rahe hain.");
-      statusText.innerHTML = `⚠️ Aapke browser ki sakht security isay block kar rahi hai. <br> <b>Solution:</b> Pehle link copy karein, aur is <a href="https://is.gd/" target="_blank" style="color:#e75480; font-weight:bold; text-decoration:underline;">Website</a> par paste kar ke chota kar lein.`;
-    }
-  }
+  await copyLink(); 
+  alert("Link COPY ho gaya hai! 📋\n\nAgli website par apna link 'PASTE' karein aur chota link bana lein.");
+  window.open("https://tinyurl.com/app", "_blank");
 }
 
 function shareWhatsApp(){
@@ -319,12 +263,7 @@ function checkPassword() {
   const correct = actualPassword.toLowerCase();
   
   if(guess === correct) {
-    document.getElementById("soundPop").play().catch(e=>{}); 
-    
-    const bdayAudio = document.getElementById("bdayMusic");
-    bdayAudio.volume = 0;
-    bdayAudio.play().then(() => { bdayAudio.pause(); bdayAudio.currentTime = 0; bdayAudio.volume = 1; }).catch(e=>{});
-
+    document.getElementById("soundPop").play().catch(e=>{}); // Play Sound
     document.getElementById("lockSection").classList.add("hidden");
     document.getElementById("birthday").classList.remove("hidden");
     confetti();
@@ -347,24 +286,14 @@ function startGeneric(){
 }
 
 function openGift(){
- document.getElementById("soundPop").play().catch(e=>{}); 
- 
- const bdayAudio = document.getElementById("bdayMusic");
- bdayAudio.volume = 0;
- bdayAudio.play().then(() => { bdayAudio.pause(); bdayAudio.currentTime = 0; bdayAudio.volume = 1; }).catch(e=>{});
-
+ document.getElementById("soundPop").play().catch(e=>{}); // Pop Sound
  document.getElementById("birthday").classList.add("hidden");
  document.getElementById("cakeSection").classList.remove("hidden");
  confetti();
 }
 
 function blow(){
- document.getElementById("soundCheer").play().catch(e=>{}); 
- 
- const bdayAudio = document.getElementById("bdayMusic");
- bdayAudio.volume = 1; 
- bdayAudio.play().catch(e => { console.log("Abhi bhi strict hai browser", e) });
- 
+ document.getElementById("soundCheer").play().catch(e=>{}); // Cheering Sound
  document.querySelectorAll(".flame").forEach(x=>x.classList.add("off"));
  document.getElementById("afterCake").classList.remove("hidden");
  confetti(); hearts();
@@ -374,8 +303,9 @@ function blow(){
 function typeWriter(text, i) {
   if (i < text.length) {
     document.getElementById("messageText").innerHTML += text.charAt(i);
-    setTimeout(function() { typeWriter(text, i + 1) }, 40); 
+    setTimeout(function() { typeWriter(text, i + 1) }, 40); // Speed of typing
   } else {
+    // Show next button when typing is done
     document.getElementById("nextBtn").classList.remove("hidden");
   }
 }
@@ -383,8 +313,8 @@ function typeWriter(text, i) {
 function showMessage(){
  document.getElementById("cakeSection").classList.add("hidden");
  document.getElementById("messageSection").classList.remove("hidden");
- document.getElementById("messageText").innerHTML = ""; 
- typeWriter(customMessage, 0); 
+ document.getElementById("messageText").innerHTML = ""; // Clear box
+ typeWriter(customMessage, 0); // Start typing animation
 }
 
 function finalSurprise(){
