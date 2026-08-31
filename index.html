@@ -227,8 +227,8 @@ async function copyLink(){
  catch(e){document.getElementById("copied").textContent="Select and copy manually.";}
 }
 
-// THE FINAL FIX: CORS Proxy + is.gd (Direct Link, No Security Blocks!)
-async function shortenLink() {
+// THE NINJA FIX: Using JSONP to bypass all browser security blocks! 🥷
+function shortenLink() {
   const generatedLinkElement = document.getElementById("generatedLink");
   const longUrl = generatedLinkElement.textContent;
   const statusText = document.getElementById("copied");
@@ -240,29 +240,40 @@ async function shortenLink() {
 
   statusText.textContent = "Chota ho raha hai... ⏳";
 
-  try {
-    // Step 1: Create the target API URL for is.gd
-    const isGdApiUrl = `https://is.gd/create.php?format=simple&url=${encodeURIComponent(longUrl)}`;
-    
-    // Step 2: Use AllOrigins as a bridge to bypass GitHub's CORS block
-    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(isGdApiUrl)}`;
-
-    const response = await fetch(proxyUrl);
-
-    if (response.ok) {
-      const shortUrl = await response.text();
-      // Remove any extra spaces the proxy might add
-      const cleanShortUrl = shortUrl.trim(); 
-      generatedLinkElement.textContent = cleanShortUrl; 
-      await navigator.clipboard.writeText(cleanShortUrl); 
-      statusText.textContent = "Short link copy ho gaya! ✅ (Ab yeh direct open hoga)";
+  // Create a unique random function name for JSONP
+  const callbackName = 'isgd_callback_' + Math.floor(Math.random() * 100000);
+  
+  // This function will be called directly by is.gd server!
+  window[callbackName] = function(data) {
+    if (data.shorturl) {
+      generatedLinkElement.textContent = data.shorturl; 
+      navigator.clipboard.writeText(data.shorturl).then(() => {
+        statusText.textContent = "Short link copy ho gaya! ✅ (Ab yeh direct open hoga)";
+      }).catch(() => {
+        statusText.textContent = "Chota ho gaya, but auto-copy fail. Manually copy karein.";
+      });
     } else {
-      throw new Error("API call failed");
+      statusText.textContent = "Error! Website format masla.";
     }
-  } catch (error) {
-    statusText.textContent = "Error fixing link. Security ya network issue.";
-    console.error("Link shortening error:", error);
-  }
+    
+    // Safaai (Cleanup)
+    delete window[callbackName];
+    const scriptTag = document.getElementById(callbackName);
+    if (scriptTag) scriptTag.remove();
+  };
+
+  // Injecting script directly to bypass CORS
+  const script = document.createElement('script');
+  script.id = callbackName;
+  script.src = `https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}&callback=${callbackName}`;
+  
+  script.onerror = function() {
+    statusText.textContent = "Error! Internet ya AdBlocker check karein.";
+    delete window[callbackName];
+    script.remove();
+  };
+
+  document.body.appendChild(script);
 }
 
 function shareWhatsApp(){
