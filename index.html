@@ -227,7 +227,7 @@ async function copyLink(){
  catch(e){document.getElementById("copied").textContent="Select and copy manually.";}
 }
 
-// THE FINAL FIX: Using is.gd API which NEVER shows a preview page!
+// THE FINAL FIX: CORS Proxy + is.gd (Direct Link, No Security Blocks!)
 async function shortenLink() {
   const generatedLinkElement = document.getElementById("generatedLink");
   const longUrl = generatedLinkElement.textContent;
@@ -241,19 +241,26 @@ async function shortenLink() {
   statusText.textContent = "Chota ho raha hai... ⏳";
 
   try {
-    // is.gd API - Direct links only!
-    const response = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(longUrl)}`);
+    // Step 1: Create the target API URL for is.gd
+    const isGdApiUrl = `https://is.gd/create.php?format=simple&url=${encodeURIComponent(longUrl)}`;
+    
+    // Step 2: Use AllOrigins as a bridge to bypass GitHub's CORS block
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(isGdApiUrl)}`;
+
+    const response = await fetch(proxyUrl);
 
     if (response.ok) {
       const shortUrl = await response.text();
-      generatedLinkElement.textContent = shortUrl; 
-      await navigator.clipboard.writeText(shortUrl); 
+      // Remove any extra spaces the proxy might add
+      const cleanShortUrl = shortUrl.trim(); 
+      generatedLinkElement.textContent = cleanShortUrl; 
+      await navigator.clipboard.writeText(cleanShortUrl); 
       statusText.textContent = "Short link copy ho gaya! ✅ (Ab yeh direct open hoga)";
     } else {
       throw new Error("API call failed");
     }
   } catch (error) {
-    statusText.textContent = "Error! Internet check karein.";
+    statusText.textContent = "Error fixing link. Security ya network issue.";
     console.error("Link shortening error:", error);
   }
 }
