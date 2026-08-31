@@ -227,53 +227,63 @@ async function copyLink(){
  catch(e){document.getElementById("copied").textContent="Select and copy manually.";}
 }
 
-// THE NINJA FIX: Using JSONP to bypass all browser security blocks! 🥷
-function shortenLink() {
+// 🚀 THE ULTIMATE DOUBLE-FAILSAFE FIX 🚀
+async function shortenLink() {
   const generatedLinkElement = document.getElementById("generatedLink");
   const longUrl = generatedLinkElement.textContent;
   const statusText = document.getElementById("copied");
 
   if (location.protocol === 'file:') {
-    alert("⚠️ Offline file detected! Upload to GitHub first.");
+    alert("⚠️ Offline file detected! Isay GitHub par upload karein.");
     return;
   }
 
-  statusText.textContent = "Chota ho raha hai... ⏳";
+  statusText.innerHTML = "Chota ho raha hai... ⏳ <br><small>Thoda sabar karein...</small>";
 
-  // Create a unique random function name for JSONP
-  const callbackName = 'isgd_callback_' + Math.floor(Math.random() * 100000);
-  
-  // This function will be called directly by is.gd server!
-  window[callbackName] = function(data) {
-    if (data.shorturl) {
-      generatedLinkElement.textContent = data.shorturl; 
-      navigator.clipboard.writeText(data.shorturl).then(() => {
-        statusText.textContent = "Short link copy ho gaya! ✅ (Ab yeh direct open hoga)";
-      }).catch(() => {
-        statusText.textContent = "Chota ho gaya, but auto-copy fail. Manually copy karein.";
-      });
-    } else {
-      statusText.textContent = "Error! Website format masla.";
-    }
+  try {
+    // TARIQA 1: Safe Proxy GET request (Adblocker bypass ke liye)
+    const targetApi = encodeURIComponent(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(longUrl)}`);
+    const proxyUrl = `https://api.allorigins.win/get?url=${targetApi}`;
     
-    // Safaai (Cleanup)
-    delete window[callbackName];
-    const scriptTag = document.getElementById(callbackName);
-    if (scriptTag) scriptTag.remove();
-  };
+    const response = await fetch(proxyUrl);
+    const data = await response.json();
 
-  // Injecting script directly to bypass CORS
-  const script = document.createElement('script');
-  script.id = callbackName;
-  script.src = `https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}&callback=${callbackName}`;
-  
-  script.onerror = function() {
-    statusText.textContent = "Error! Internet ya AdBlocker check karein.";
-    delete window[callbackName];
-    script.remove();
-  };
-
-  document.body.appendChild(script);
+    if (data && data.contents && (data.contents.includes("is.gd") || data.contents.includes("v.gd"))) {
+      const shortUrl = data.contents.trim();
+      generatedLinkElement.textContent = shortUrl; 
+      await navigator.clipboard.writeText(shortUrl); 
+      statusText.innerHTML = "<b>Short link copy ho gaya! ✅</b> <br> (Yeh direct gift open karega)";
+      return; // Agar kamyab ho gaya toh yahin ruk jao
+    } else {
+      throw new Error("Proxy response theek nahi");
+    }
+  } catch (error1) {
+    console.log("Method 1 Fail hua, ab Method 2 try kar rahe hain...");
+    
+    try {
+      // TARIQA 2: Spoo.me direct API (CORS Supported)
+      const response2 = await fetch("https://spoo.me/api/shorten", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded", "Accept": "application/json" },
+        body: new URLSearchParams({ url: longUrl })
+      });
+      
+      const data2 = await response2.json();
+      
+      if (data2 && data2.short_url) {
+        generatedLinkElement.textContent = data2.short_url; 
+        await navigator.clipboard.writeText(data2.short_url); 
+        statusText.innerHTML = "<b>Short link copy ho gaya! ✅</b> <br> (Yeh direct gift open karega)";
+        return;
+      } else {
+        throw new Error("API 2 bhi fail");
+      }
+    } catch (error2) {
+      // TARIQA 3: Backup (Agar Chrome sab kuch hi block kar de)
+      console.log("Browser bohat strict hai. Backup message show kar rahe hain.");
+      statusText.innerHTML = `⚠️ Aapke browser ki sakht security isay block kar rahi hai. <br> <b>Solution:</b> Pehle link copy karein, aur is <a href="https://is.gd/" target="_blank" style="color:#e75480; font-weight:bold; text-decoration:underline;">Website</a> par paste kar ke chota kar lein.`;
+    }
+  }
 }
 
 function shareWhatsApp(){
