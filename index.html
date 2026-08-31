@@ -103,8 +103,6 @@ button:hover{transform:translateY(-3px) scale(1.05); box-shadow:0 15px 25px rgba
 <!-- Hidden Audio for Sound Effects -->
 <audio id="soundPop" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg" preload="auto"></audio>
 <audio id="soundCheer" src="https://actions.google.com/sounds/v1/crowds/kids_cheering.ogg" preload="auto"></audio>
-<!-- MUSIC AUDIO ELEMENT ADDED HERE -->
-<audio id="bdayMusic" preload="auto" loop></audio>
 
 <div class="container">
 
@@ -118,11 +116,6 @@ button:hover{transform:translateY(-3px) scale(1.05); box-shadow:0 15px 25px rgba
 <textarea id="cmessage" placeholder="Birthday message (Optional)"></textarea>
 <input id="cpass" placeholder="Secret Password (Optional)" style="border-color:#a855f7;">
 <p class="small" style="color:#a855f7; margin-top:-2px;">Password lagaya toh uske bina gift nahi khulega! 🔒</p>
-
-<!-- CUSTOM MUSIC INPUT OPTION ADDED HERE -->
-<input id="cmusic" placeholder="Custom Music Link (MP3 URL - Optional)" style="border-color:#10b981;">
-<p class="small" style="color:#10b981; margin-top:-2px;">Apne pasand ke MP3 song ka link dalein (Khali chorne par default baje ga) 🎵</p>
-
 <br>
 <button onclick="makeLink()">🔗 Generate Gift Link</button>
 
@@ -204,8 +197,6 @@ button:hover{transform:translateY(-3px) scale(1.05); box-shadow:0 15px 25px rgba
 let birthdayName="Birthday Star",birthdayAge="",customMessage="May your life always be filled with happiness, peace, success and beautiful moments. ✨❤️";
 let personalized=false;
 let actualPassword="";
-// DEFAULT MUSIC URL
-let defaultMusicUrl = "https://ia801703.us.archive.org/34/items/HappyBirthdayToYou_637/Happy_Birthday_To_You.mp3";
 
 function enc(s){return encodeURIComponent(s||"")}
 function makeLink(){
@@ -213,7 +204,6 @@ function makeLink(){
  const age=document.getElementById("cage").value.trim();
  const msg=document.getElementById("cmessage").value.trim();
  const pass=document.getElementById("cpass").value.trim();
- const music=document.getElementById("cmusic").value.trim(); // MUSIC VALUE PICKED
  
  const base=window.location.href.split("?")[0];
  const parts=[];
@@ -221,7 +211,6 @@ function makeLink(){
  if(age)parts.push("age="+enc(age));
  if(msg)parts.push("message="+enc(msg));
  if(pass)parts.push("pass="+enc(pass));
- if(music)parts.push("music="+enc(music)); // ADDED TO URL
  
  const link=base+(parts.length?"?"+parts.join("&"):"");
  document.getElementById("generatedLink").textContent=link;
@@ -250,19 +239,12 @@ function shareWhatsApp(){
 
 function loadDetails(){
  const p=new URLSearchParams(location.search);
- if(p.has("name")||p.has("age")||p.has("message")||p.has("pass")||p.has("music")){
+ if(p.has("name")||p.has("age")||p.has("message")||p.has("pass")){
    personalized=true;
    birthdayName=p.get("name")?.trim()||"Birthday Star";
    birthdayAge=p.get("age")?.trim()||"";
    customMessage=p.get("message")?.trim()||customMessage;
    actualPassword=p.get("pass")?.trim()||"";
-   
-   // MUSIC CHECK & SET
-   if(p.has("music")) {
-       document.getElementById("bdayMusic").src = p.get("music").trim();
-   } else {
-       document.getElementById("bdayMusic").src = defaultMusicUrl;
-   }
    
    document.getElementById("creator").classList.add("hidden");
    prepare();
@@ -282,14 +264,6 @@ function checkPassword() {
   
   if(guess === correct) {
     document.getElementById("soundPop").play().catch(e=>{}); // Play Sound
-    
-    // MUSIC BROWSER UNLOCK TRICK
-    const bAudio = document.getElementById("bdayMusic");
-    if(bAudio.src) {
-        bAudio.volume = 0;
-        bAudio.play().then(() => { bAudio.pause(); bAudio.currentTime = 0; bAudio.volume = 1; }).catch(e=>{});
-    }
-
     document.getElementById("lockSection").classList.add("hidden");
     document.getElementById("birthday").classList.remove("hidden");
     confetti();
@@ -305,7 +279,6 @@ function prepare(){
 
 function startGeneric(){
  birthdayName="Birthday Star";birthdayAge="";customMessage="May your life always be filled with happiness, peace, success and beautiful moments. ✨❤️";
- document.getElementById("bdayMusic").src = defaultMusicUrl; // Set default song for generic
  prepare();
  document.getElementById("creator").classList.add("hidden");
  document.getElementById("birthday").classList.remove("hidden");
@@ -314,14 +287,6 @@ function startGeneric(){
 
 function openGift(){
  document.getElementById("soundPop").play().catch(e=>{}); // Pop Sound
- 
- // MUSIC BROWSER UNLOCK TRICK
- const bAudio = document.getElementById("bdayMusic");
- if(bAudio.src) {
-     bAudio.volume = 0;
-     bAudio.play().then(() => { bAudio.pause(); bAudio.currentTime = 0; bAudio.volume = 1; }).catch(e=>{});
- }
-
  document.getElementById("birthday").classList.add("hidden");
  document.getElementById("cakeSection").classList.remove("hidden");
  confetti();
@@ -329,14 +294,6 @@ function openGift(){
 
 function blow(){
  document.getElementById("soundCheer").play().catch(e=>{}); // Cheering Sound
- 
- // FINAL PLAY MUSIC ON BLOW
- const bAudio = document.getElementById("bdayMusic");
- if(bAudio.src) {
-     bAudio.volume = 1;
-     bAudio.play().catch(e=>{console.log("Music play issue", e)});
- }
- 
  document.querySelectorAll(".flame").forEach(x=>x.classList.add("off"));
  document.getElementById("afterCake").classList.remove("hidden");
  confetti(); hearts();
