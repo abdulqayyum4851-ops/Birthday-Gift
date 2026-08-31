@@ -1,240 +1,356 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Make a Wish!</title>
-    <!-- Confetti Library -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <style>
-        body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-color: #2b2b2b;
-            transition: background-color 1.5s ease;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Birthday Surprise 🎁</title>
+<!-- Google Fonts for Premium Look -->
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-        /* Start Button */
-        #startButton {
-            padding: 15px 40px;
-            font-size: 1.5rem;
-            color: white;
-            background: linear-gradient(45deg, #ff0055, #ffaa00);
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(255, 0, 85, 0.4);
-            transition: transform 0.2s;
-            z-index: 10;
-        }
-        #startButton:active {
-            transform: scale(0.95);
-        }
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0; min-height:100vh; font-family:'Poppins', sans-serif; text-align:center; color:#4a1942;
+  /* Animated Magical Background */
+  background: linear-gradient(-45deg, #ff9a9e, #fecfef, #a1c4fd, #c2e9fb);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  overflow-x:hidden;
+}
+@keyframes gradientBG {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
 
-        /* Candle Design */
-        #candleContainer {
-            display: none;
-            position: relative;
-            margin-top: 50px;
-            cursor: pointer; 
-        }
-        .candle {
-            width: 60px;
-            height: 150px;
-            background: linear-gradient(to right, #e2dcdc, #ffffff, #e2dcdc);
-            border-radius: 5px;
-            position: relative;
-            box-shadow: 0 10px 15px rgba(0,0,0,0.5);
-        }
-        .flame {
-            width: 25px;
-            height: 45px;
-            background: radial-gradient(ellipse at bottom, #ffffff 10%, #ffdd00 40%, #ff8800 80%, rgba(255, 136, 0, 0) 100%);
-            border-radius: 50% 50% 20% 20%;
-            position: absolute;
-            top: -55px;
-            left: 17px;
-            box-shadow: 0 0 20px #ffdd00, 0 0 50px #ffdd00;
-            animation: flicker 0.1s infinite alternate;
-            transition: opacity 0.3s ease;
-        }
+.container{max-width:850px; margin:auto; padding:20px; position:relative; z-index:10;}
 
-        @keyframes flicker {
-            0% { transform: scale(1) rotate(-2deg); opacity: 0.9; }
-            100% { transform: scale(1.05) rotate(2deg); opacity: 1; }
-        }
+/* Glassmorphism Card Effect */
+.card{
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 30px;
+  padding: 35px 25px;
+  margin: 24px auto;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+  animation: show 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
 
-        /* Instructions */
-        #instruction {
-            color: white;
-            margin-top: 25px;
-            font-size: 1.2rem;
-            opacity: 0.9;
-            display: none;
-            text-align: center;
-        }
+.hidden{display:none!important}
+@keyframes show{from{opacity:0; transform:translateY(40px) scale(0.9)}to{opacity:1; transform:none scale(1)}}
 
-        /* Neon Hidden Message */
-        #wishMessage {
-            opacity: 0;
-            position: absolute;
-            top: 15%;
-            width: 100%;
-            text-align: center;
-            color: #fff;
-            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 40px #ff00ff;
-            font-size: 3rem;
-            font-weight: bold;
-            transition: opacity 2s ease-in, transform 2s ease;
-            transform: translateY(20px);
-            z-index: 5;
-        }
-        .show-message {
-            opacity: 1 !important;
-            transform: translateY(0) !important;
-        }
-    </style>
+h1{font-family:'Pacifico', cursive; font-size:42px; color:#e75480; text-shadow: 2px 2px 4px rgba(255,255,255,0.7); margin-bottom: 10px;}
+h2{font-size:24px; font-weight:600;}
+p{font-size:17px; line-height:1.7;}
+.big{font-size:75px; filter: drop-shadow(0px 10px 10px rgba(0,0,0,0.15));}
+
+input,textarea{
+  width:90%; max-width:460px; padding:15px; margin:8px; 
+  border:2px solid rgba(239, 165, 189, 0.5); 
+  border-radius:15px; font-size:16px; font-family:'Poppins', sans-serif;
+  background: rgba(255,255,255,0.8); outline:none; transition:0.3s;
+}
+input:focus, textarea:focus { border-color:#e75480; background:#fff; transform:scale(1.02); }
+textarea{height:115px; resize:none}
+
+button{
+  border:0; border-radius:30px; padding:15px 28px; margin:10px 5px; 
+  background:linear-gradient(135deg,#ff758c,#ff7eb3); color:#fff; font-size:17px; 
+  font-family:'Poppins', sans-serif; font-weight:600; cursor:pointer; 
+  box-shadow:0 10px 20px rgba(255, 117, 140, 0.4); transition:0.3s;
+}
+button:hover{transform:translateY(-3px) scale(1.05); box-shadow:0 15px 25px rgba(255, 117, 140, 0.5);}
+.whatsapp-btn {background:linear-gradient(135deg,#25D366,#128C7E) !important; box-shadow:0 10px 20px rgba(37, 211, 102, 0.4);}
+.shorten-btn {background:linear-gradient(135deg,#f59e0b,#d97706) !important; box-shadow:0 10px 20px rgba(245, 158, 11, 0.4);}
+
+.small{font-size:13px; opacity:.8;}
+.linkbox{word-break:break-all; background:rgba(255, 245, 250, 0.8); padding:14px; border-radius:15px; margin:15px auto; max-width:650px; font-size:13px; font-family:monospace; color:#333; border: 1px dashed #e75480;}
+
+/* Animations for Gift and Cake remain same but refined */
+.gift{position:relative;width:190px;height:175px;margin:35px auto;cursor:pointer;transition:.3s; animation: float 3s ease-in-out infinite;}
+@keyframes float { 0% {transform:translateY(0px);} 50% {transform:translateY(-15px);} 100% {transform:translateY(0px);} }
+.gift:hover{transform:scale(1.1) rotate(3deg); animation:none;}
+.box{position:absolute;bottom:0;left:20px;width:150px;height:115px;background:#e75480;border-radius:8px; box-shadow:inset -10px -10px 20px rgba(0,0,0,0.1)}
+.lid{position:absolute;top:27px;left:10px;width:170px;height:36px;background:#d63d6d;border-radius:8px;z-index:3; box-shadow: 0 5px 10px rgba(0,0,0,0.2)}
+.vr{position:absolute;left:82px;top:20px;width:25px;height:150px;background:linear-gradient(#ffe066, #ffb142);z-index:4}
+.hr{position:absolute;left:10px;top:78px;width:170px;height:22px;background:linear-gradient(#ffe066, #ffb142);z-index:4}
+.bow{position:absolute;top:-3px;left:58px;font-size:65px;z-index:5; filter:drop-shadow(0 5px 5px rgba(0,0,0,0.2))}
+
+.cake{position:relative;width:300px;height:225px;margin:70px auto 20px}
+.bottom{position:absolute;bottom:8px;left:15px;width:270px;height:75px;background:linear-gradient(#d96586,#bd4167);border-radius:12px 12px 22px 22px; box-shadow: 0 10px 15px rgba(0,0,0,0.2)}
+.top{position:absolute;bottom:68px;left:30px;width:240px;height:70px;background:linear-gradient(#ff9fba,#ed7194);border-radius:15px 15px 12px 12px}
+.cream{position:absolute;bottom:123px;left:30px;width:240px;height:28px;background:#fff;border-radius:50%; box-shadow: 0 5px 5px rgba(0,0,0,0.05)}
+.candle{position:absolute;bottom:143px;width:15px;height:58px;background:repeating-linear-gradient(45deg,#fff 0,#fff 8px,#ff77a8 8px,#ff77a8 15px);border-radius:5px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1)}
+.c1{left:75px}.c2{left:142px}.c3{left:209px}
+.flame{position:absolute;width:20px;height:28px;background:orange;border-radius:50% 50% 50% 0;transform:rotate(-45deg);top:-25px;left:-3px;animation:flicker .4s infinite alternate;box-shadow:0 0 20px #ffeb3b, 0 0 40px #ff9800}
+@keyframes flicker{to{transform:rotate(-45deg) scale(1.18); opacity:0.8}}
+.off{display:none}
+
+.message{white-space:pre-line; background:rgba(255,255,255,0.7); padding:25px; border-radius:22px; font-size:19px; line-height: 1.8; border-left: 5px solid #e75480; text-align: left; min-height: 150px;}
+
+.confetti{position:fixed;top:-30px;z-index:9999;font-size:25px;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+.heart{position:fixed;bottom:-30px;font-size:30px;animation:up linear forwards;pointer-events:none; filter:drop-shadow(0 0 10px rgba(255,0,0,0.3))}
+@keyframes up{to{transform:translateY(-110vh) scale(1.5);opacity:0}}
+
+@media(max-width:600px){h1{font-size:34px}h2{font-size:20px}.cake{transform:scale(.75);margin-left:auto;margin-right:auto}}
+</style>
 </head>
 <body>
 
-    <!-- Start Button -->
-    <button id="startButton">Tap to Start 🎁</button>
+<!-- Hidden Audio for Sound Effects and Music -->
+<audio id="soundPop" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg" preload="auto"></audio>
+<audio id="soundCheer" src="https://actions.google.com/sounds/v1/crowds/kids_cheering.ogg" preload="auto"></audio>
+<!-- Yahan Happy Birthday wala song add kiya gaya hai -->
+<audio id="bdayMusic" src="https://ia801703.us.archive.org/34/items/HappyBirthdayToYou_637/Happy_Birthday_To_You.mp3" preload="auto" loop></audio>
 
-    <!-- Candle -->
-    <div id="candleContainer" title="Tap to blow out the candle!">
-        <div class="flame" id="flame"></div>
-        <div class="candle"></div>
-    </div>
-    
-    <div id="instruction">Zor se phoonk maarein<br>ya candle par tap karein! 🌬️👆</div>
+<div class="container">
 
-    <!-- Hidden Message -->
-    <div id="wishMessage">
-        🎉 Happy Birthday! 🎉<br>
-        <span style="font-size: 1.5rem; text-shadow: none;">May all your wishes come true!</span>
-    </div>
+<!-- CREATOR -->
+<div class="card" id="creator">
+<div class="big">🎁</div>
+<h1>Gift Creator</h1>
+<p>Create a beautiful, animated gift link.</p>
+<input id="cname" placeholder="Friend's name (Optional)">
+<input id="cage" type="number" placeholder="Age (Optional)">
+<textarea id="cmessage" placeholder="Birthday message (Optional)"></textarea>
+<input id="cpass" placeholder="Secret Password (Optional)" style="border-color:#a855f7;">
+<p class="small" style="color:#a855f7; margin-top:-2px;">Password lagaya toh uske bina gift nahi khulega! 🔒</p>
+<br>
+<button onclick="makeLink()">🔗 Generate Gift Link</button>
 
-    <!-- ORIGINAL HAPPY BIRTHDAY SONG ADDED HERE -->
-    <audio id="bdayAudio" src="https://ia801703.us.archive.org/34/items/HappyBirthdayToYou_637/Happy_Birthday_To_You.mp3"></audio>
+<div id="result" class="hidden">
+<div class="linkbox" id="generatedLink"></div>
+<button onclick="copyLink()">📋 Copy Link</button>
+<button onclick="shortenLink()" class="shorten-btn">✂️ Make Link Shorter</button>
+<button onclick="shareWhatsApp()" class="whatsapp-btn">📲 Share on WhatsApp</button>
+<p id="copied" class="small"></p>
+</div>
+<hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.1); margin: 20px 0;">
+<button onclick="startGeneric()" style="background:rgba(0,0,0,0.1); color:#333; box-shadow:none;">👀 Preview Birthday Gift</button>
+</div>
 
-    <script>
-        const startButton = document.getElementById('startButton');
-        const candleContainer = document.getElementById('candleContainer');
-        const flame = document.getElementById('flame');
-        const instruction = document.getElementById('instruction');
-        const wishMessage = document.getElementById('wishMessage');
-        const bdayAudio = document.getElementById('bdayAudio');
+<!-- SIMPLE PASSWORD SECTION -->
+<div class="card hidden" id="lockSection">
+<div class="big">🤫</div>
+<h1>A Special Gift!</h1>
+<p>Enter the secret word to unlock it ✨</p>
+<input id="guessPass" type="text" placeholder="Password here..." style="text-align:center; font-size:20px;">
+<br>
+<button onclick="checkPassword()">✨ Unlock Gift</button>
+<p id="wrongPassMsg" class="hidden" style="color:#e75480; font-weight:bold; margin-top:10px;">❌ Oops! Wrong password. Try again!</p>
+</div>
 
-        let isBlown = false;
+<!-- BIRTHDAY -->
+<div class="card hidden" id="birthday">
+<div class="big">🎉🎈</div>
+<h1>Happy Birthday, <br><span id="personName" style="color:#a855f7;">Birthday Star</span>! ❤️</h1>
+<h2 id="ageText">Today is your special day! 🥳</h2>
+<p id="openingText">I have a little surprise waiting for you...</p>
+<div class="gift" onclick="openGift()">
+<div class="bow">🎀</div><div class="lid"></div><div class="box"></div><div class="vr"></div><div class="hr"></div>
+</div>
+<p style="font-weight:bold; color:#e75480; animation: float 2s infinite;">👆 Tap the gift box!</p>
+</div>
 
-        // Step 1: User click to unlock audio & mic
-        startButton.addEventListener('click', async () => {
-            // Unlock audio
-            bdayAudio.play().then(() => {
-                bdayAudio.pause();
-                bdayAudio.currentTime = 0;
-            }).catch(e => console.log("Audio unlock issue:", e));
+<!-- CAKE -->
+<div class="card hidden" id="cakeSection">
+<div class="big">🎂</div>
+<h1>Make a Wish! ✨</h1>
+<p>Close your eyes, make a wish, <br>and blow out your candles! 🕯️</p>
+<div class="cake">
+<div class="bottom"></div><div class="top"></div><div class="cream"></div>
+<div class="candle c1"><div class="flame"></div></div>
+<div class="candle c2"><div class="flame"></div></div>
+<div class="candle c3"><div class="flame"></div></div>
+</div>
+<button onclick="blow()">💨 Tap to Blow Candles</button>
+<div id="afterCake" class="hidden">
+<h2 style="color:#e75480;">🎉 YAY! 🎉</h2>
+<p>Your wish has been sent to the universe! 💫</p>
+<button onclick="showMessage()">💌 Open Your Message</button>
+</div>
+</div>
 
-            startButton.style.display = 'none'; 
-            candleContainer.style.display = 'block'; 
-            instruction.style.display = 'block'; 
+<!-- MESSAGE (WITH TYPEWRITER) -->
+<div class="card hidden" id="messageSection">
+<div class="big">💌</div>
+<h1>For You...</h1>
+<!-- Typewriter Container -->
+<div class="message"><p id="messageText"></p></div>
+<br>
+<button id="nextBtn" class="hidden" onclick="finalSurprise()">🎁 One Last Thing</button>
+</div>
 
-            // Start Mic
-            await startMicDetection();
-        });
+<!-- FINAL -->
+<div class="card hidden" id="finalSection">
+<div class="big">🥹✨❤️</div>
+<h1 style="font-size: 35px;">You Are Truly Special</h1>
+<p>Some people are gifts in themselves...</p>
+<h2 style="color:#a855f7;">And you are one of them. 🫶</h2>
+<p>May your smile never fade, your dreams always come true, and your life be filled with beautiful moments. ✨</p>
+<h1 style="margin-top:20px; font-size:45px;">Happy Birthday! 🎂</h1>
+</div>
+</div>
 
-        // Step 2: Mic Detection Logic
-        async function startMicDetection() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const analyser = audioContext.createAnalyser();
-                const microphone = audioContext.createMediaStreamSource(stream);
-                
-                microphone.connect(analyser);
-                analyser.fftSize = 256;
-                const bufferLength = analyser.frequencyBinCount;
-                const dataArray = new Uint8Array(bufferLength);
+<script>
+let birthdayName="Birthday Star",birthdayAge="",customMessage="May your life always be filled with happiness, peace, success and beautiful moments. ✨❤️";
+let personalized=false;
+let actualPassword="";
 
-                function detectBlow() {
-                    if (isBlown) return; 
+function enc(s){return encodeURIComponent(s||"")}
+function makeLink(){
+ const name=document.getElementById("cname").value.trim();
+ const age=document.getElementById("cage").value.trim();
+ const msg=document.getElementById("cmessage").value.trim();
+ const pass=document.getElementById("cpass").value.trim();
+ 
+ const base=window.location.href.split("?")[0];
+ const parts=[];
+ if(name)parts.push("name="+enc(name));
+ if(age)parts.push("age="+enc(age));
+ if(msg)parts.push("message="+enc(msg));
+ if(pass)parts.push("pass="+enc(pass));
+ 
+ const link=base+(parts.length?"?"+parts.join("&"):"");
+ document.getElementById("generatedLink").textContent=link;
+ document.getElementById("result").classList.remove("hidden");
+ document.getElementById("copied").textContent="";
+}
 
-                    analyser.getByteFrequencyData(dataArray);
-                    let sum = 0;
-                    for (let i = 0; i < bufferLength; i++) {
-                        sum += dataArray[i];
-                    }
-                    let average = sum / bufferLength;
+async function copyLink(){
+ const text=document.getElementById("generatedLink").textContent;
+ try{await navigator.clipboard.writeText(text);document.getElementById("copied").textContent="Copied! ❤️";}
+ catch(e){document.getElementById("copied").textContent="Select and copy manually.";}
+}
 
-                    // Detect blow volume
-                    if (average > 70) { 
-                        triggerSurprise();
-                    } else {
-                        requestAnimationFrame(detectBlow); 
-                    }
-                }
-                detectBlow();
-            } catch (err) {
-                console.log("Mic access denied or unavailable. Tap backup is ready.");
-            }
-        }
+async function shortenLink() {
+  await copyLink(); 
+  alert("Link COPY ho gaya hai! 📋\n\nAgli website par apna link 'PASTE' karein aur chota link bana lein.");
+  window.open("https://tinyurl.com/app", "_blank");
+}
 
-        // Step 3: BACKUP - Tap to blow
-        candleContainer.addEventListener('click', () => {
-            if (!isBlown) {
-                triggerSurprise();
-            }
-        });
+function shareWhatsApp(){
+ const link=document.getElementById("generatedLink").textContent;
+ const name=document.getElementById("cname").value.trim() || "Friend";
+ const text=`🎂 I have a special birthday surprise for you, ${name}! Open it here: \n\n${link}`;
+ window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+}
 
-        // Step 4: Action when candle is blown (Mic or Tap)
-        function triggerSurprise() {
-            isBlown = true;
-            
-            // 1. Hide flame and instruction
-            flame.style.opacity = '0';
-            instruction.style.display = 'none';
+function loadDetails(){
+ const p=new URLSearchParams(location.search);
+ if(p.has("name")||p.has("age")||p.has("message")||p.has("pass")){
+   personalized=true;
+   birthdayName=p.get("name")?.trim()||"Birthday Star";
+   birthdayAge=p.get("age")?.trim()||"";
+   customMessage=p.get("message")?.trim()||customMessage;
+   actualPassword=p.get("pass")?.trim()||"";
+   
+   document.getElementById("creator").classList.add("hidden");
+   prepare();
 
-            // 2. Play Music (Asli Happy Birthday bajega ab!)
-            bdayAudio.play();
+   if(actualPassword !== "") {
+     document.getElementById("lockSection").classList.remove("hidden");
+   } else {
+     document.getElementById("birthday").classList.remove("hidden");
+     confetti(); 
+   }
+ }
+}
 
-            // 3. Dark Background
-            document.body.style.backgroundColor = "#050505";
+function checkPassword() {
+  const guess = document.getElementById("guessPass").value.trim().toLowerCase();
+  const correct = actualPassword.toLowerCase();
+  
+  if(guess === correct) {
+    document.getElementById("soundPop").play().catch(e=>{}); // Play Sound
+    document.getElementById("lockSection").classList.add("hidden");
+    document.getElementById("birthday").classList.remove("hidden");
+    confetti();
+  } else {
+    document.getElementById("wrongPassMsg").classList.remove("hidden");
+  }
+}
 
-            // 4. Show Neon Message
-            wishMessage.classList.add('show-message');
+function prepare(){
+ document.getElementById("personName").textContent=birthdayName;
+ document.getElementById("ageText").textContent=birthdayAge ? "Welcome to your "+birthdayAge+"th birthday! 🥳" : "Today is your special day! 🥳";
+}
 
-            // 5. Fire Confetti
-            const end = Date.now() + 3 * 1000; 
-            const colors = ['#ff0055', '#00ffff', '#ffaa00', '#ff00ff'];
+function startGeneric(){
+ birthdayName="Birthday Star";birthdayAge="";customMessage="May your life always be filled with happiness, peace, success and beautiful moments. ✨❤️";
+ prepare();
+ document.getElementById("creator").classList.add("hidden");
+ document.getElementById("birthday").classList.remove("hidden");
+ confetti();
+}
 
-            (function frame() {
-                confetti({
-                    particleCount: 5,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0 },
-                    colors: colors
-                });
-                confetti({
-                    particleCount: 5,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1 },
-                    colors: colors
-                });
+function openGift(){
+ document.getElementById("soundPop").play().catch(e=>{}); // Pop Sound
+ document.getElementById("birthday").classList.add("hidden");
+ document.getElementById("cakeSection").classList.remove("hidden");
+ confetti();
+}
 
-                if (Date.now() < end) {
-                    requestAnimationFrame(frame);
-                }
-            }());
-        }
-    </script>
+function blow(){
+ document.getElementById("soundCheer").play().catch(e=>{}); // Cheering Sound
+ document.getElementById("bdayMusic").play().catch(e=>{}); // Yahan Happy Birthday Music play hoga
+ document.querySelectorAll(".flame").forEach(x=>x.classList.add("off"));
+ document.getElementById("afterCake").classList.remove("hidden");
+ confetti(); hearts();
+}
+
+// TYPEWRITER EFFECT LOGIC
+function typeWriter(text, i) {
+  if (i < text.length) {
+    document.getElementById("messageText").innerHTML += text.charAt(i);
+    setTimeout(function() { typeWriter(text, i + 1) }, 40); // Speed of typing
+  } else {
+    // Show next button when typing is done
+    document.getElementById("nextBtn").classList.remove("hidden");
+  }
+}
+
+function showMessage(){
+ document.getElementById("cakeSection").classList.add("hidden");
+ document.getElementById("messageSection").classList.remove("hidden");
+ document.getElementById("messageText").innerHTML = ""; // Clear box
+ typeWriter(customMessage, 0); // Start typing animation
+}
+
+function finalSurprise(){
+ document.getElementById("messageSection").classList.add("hidden");
+ document.getElementById("finalSection").classList.remove("hidden");
+ confetti(); hearts();
+}
+
+function confetti(){
+ const e=["🎉","🎊","✨","🎈","🌸","🥳","⭐"];
+ for(let i=0;i<40;i++){
+   let x=document.createElement("div"); x.className="confetti"; 
+   x.textContent=e[Math.floor(Math.random()*e.length)]; 
+   x.style.left=Math.random()*100+"vw"; 
+   x.style.animationDuration=2+Math.random()*3+"s"; 
+   document.body.appendChild(x); setTimeout(()=>x.remove(),5000);
+ }
+}
+
+function hearts(){
+ for(let i=0;i<25;i++){
+   let x=document.createElement("div"); x.className="heart"; x.textContent="❤️"; 
+   x.style.left=Math.random()*100+"vw"; 
+   x.style.animationDuration=3+Math.random()*3+"s"; 
+   document.body.appendChild(x); setTimeout(()=>x.remove(),6000);
+ }
+}
+
+document.getElementById("guessPass")?.addEventListener("keypress", function(event) {
+  if (event.key === "Enter") { event.preventDefault(); checkPassword(); }
+});
+
+loadDetails();
+</script>
 </body>
 </html>
