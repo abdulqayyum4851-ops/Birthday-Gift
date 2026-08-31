@@ -100,11 +100,11 @@ button:hover{transform:translateY(-3px) scale(1.05); box-shadow:0 15px 25px rgba
 </head>
 <body>
 
-<!-- Hidden Audio for Sound Effects and Music -->
+<!-- Sound Effects & Birthday Music -->
 <audio id="soundPop" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg" preload="auto"></audio>
 <audio id="soundCheer" src="https://actions.google.com/sounds/v1/crowds/kids_cheering.ogg" preload="auto"></audio>
-<!-- Yahan Happy Birthday wala song add kiya gaya hai -->
-<audio id="bdayMusic" src="https://ia801703.us.archive.org/34/items/HappyBirthdayToYou_637/Happy_Birthday_To_You.mp3" preload="auto" loop></audio>
+<!-- 100% Reliable Happy Birthday Audio -->
+<audio id="bdayMusic" src="https://ia802607.us.archive.org/32/items/HappyBirthdayToYou_201412/Happy%20Birthday%20To%20You.mp3" preload="auto" loop></audio>
 
 <div class="container">
 
@@ -226,10 +226,27 @@ async function copyLink(){
  catch(e){document.getElementById("copied").textContent="Select and copy manually.";}
 }
 
+// Fixed API Shortener - Ab doosri tab mein open nahi hoga!
 async function shortenLink() {
-  await copyLink(); 
-  alert("Link COPY ho gaya hai! 📋\n\nAgli website par apna link 'PASTE' karein aur chota link bana lein.");
-  window.open("https://tinyurl.com/app", "_blank");
+ const linkBox = document.getElementById("generatedLink");
+ const originalLink = linkBox.textContent;
+ const statusText = document.getElementById("copied");
+ 
+ statusText.textContent = "Chota ho raha hai... ⏳";
+ 
+ try {
+   const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(originalLink)}`);
+   if (response.ok) {
+     const shortUrl = await response.text();
+     linkBox.textContent = shortUrl;
+     await copyLink();
+     statusText.textContent = "Link Chota aur Copy ho gaya! ✅";
+   } else {
+     statusText.textContent = "Error! Kuch masla hai.";
+   }
+ } catch (error) {
+   statusText.textContent = "Error! Internet check karein.";
+ }
 }
 
 function shareWhatsApp(){
@@ -265,7 +282,12 @@ function checkPassword() {
   const correct = actualPassword.toLowerCase();
   
   if(guess === correct) {
-    document.getElementById("soundPop").play().catch(e=>{}); // Play Sound
+    document.getElementById("soundPop").play().catch(e=>{});
+    
+    // Music Trick: Unlock audio context on click
+    const bdayAudio = document.getElementById("bdayMusic");
+    bdayAudio.play().then(() => { bdayAudio.pause(); bdayAudio.currentTime = 0; }).catch(e=>{});
+
     document.getElementById("lockSection").classList.add("hidden");
     document.getElementById("birthday").classList.remove("hidden");
     confetti();
@@ -289,6 +311,11 @@ function startGeneric(){
 
 function openGift(){
  document.getElementById("soundPop").play().catch(e=>{}); // Pop Sound
+ 
+ // Music Trick: Unlock audio context on click (Agar password na ho toh yeh trick chalegi)
+ const bdayAudio = document.getElementById("bdayMusic");
+ bdayAudio.play().then(() => { bdayAudio.pause(); bdayAudio.currentTime = 0; }).catch(e=>{});
+
  document.getElementById("birthday").classList.add("hidden");
  document.getElementById("cakeSection").classList.remove("hidden");
  confetti();
@@ -296,7 +323,10 @@ function openGift(){
 
 function blow(){
  document.getElementById("soundCheer").play().catch(e=>{}); // Cheering Sound
- document.getElementById("bdayMusic").play().catch(e=>{}); // Yahan Happy Birthday Music play hoga
+ 
+ // Music Yahan Play Hoga (Candle bujhte hi)
+ document.getElementById("bdayMusic").play().catch(e=>{console.log("Audio issue", e)}); 
+ 
  document.querySelectorAll(".flame").forEach(x=>x.classList.add("off"));
  document.getElementById("afterCake").classList.remove("hidden");
  confetti(); hearts();
